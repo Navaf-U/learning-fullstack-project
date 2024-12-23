@@ -1,30 +1,37 @@
 import express from 'express'
-import router from './routes.js'
-import mongoose from 'mongoose'
+import Router from './routes.js'
 import dotenv from 'dotenv'
+import mongoose from 'mongoose'
 const app = express()
-app.use(express.json())
+
 dotenv.config()
-const ConnectDB = async() =>{
+const PORT = process.env.PORT || 3000
+app.use(express.json())
+
+ const ConnectDB = async () =>{
     mongoose.connection.on("connected",()=>{
-        console.log("DB CONNECTED")
+        console.log("DATABASE CONNECTED")
     })
 
-    try{
-        await mongoose.connect( "mongodb+srv://navaf:navaftest@test.nwjsf.mongodb.net/myDatabase")
-
-    }catch(err){
-        console.log(err.message)
+    try {
+        mongoose.connect(process.env.DATABASE)
+    } catch (error) {
+        console.log(error)
     }
-}
-ConnectDB()
+ } 
 
-app.use("/auth",router)
+ ConnectDB()
+
+app.get("/",(req,res)=>{
+    res.send("YOO WORLD")
+})
+app.use("/",Router)
+
 
 app.all("*",(req,res)=>{
-    res.json("okay no route paths")
-})
-app.listen(3000,()=>{
-    console.log(`working on port ${3000}`)
+    res.json("NO ROUTES")
 })
 
+app.listen(PORT ,()=>{
+    console.log("RUNNING on",PORT )
+})
